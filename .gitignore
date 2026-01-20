@@ -2,13 +2,25 @@
 cache/
 out/
 
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
-/broadcast/**/dry-run/
+# Broadcast logs (deployment artifacts)
+broadcast/
 
 # Docs
 docs/
 
 # Dotenv file
 .env
+
+# OS files
+.DS_Store
+*.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Dependencies (managed by forge)
+# lib/ is tracked via .gitmodules
+
+# Foundry lock (optional - can include if you want reproducible builds)
+# foundry.lock
