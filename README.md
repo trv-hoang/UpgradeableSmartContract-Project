@@ -185,4 +185,3 @@ In Terminal 1, press `Ctrl+C` to stop Anvil, then run `anvil` again.
 ## License
 
 MIT
-# UpgradeableSmartContract-Project
