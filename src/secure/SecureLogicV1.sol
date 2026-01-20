@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * @title SecureLogicV1
  * @notice SECURE: Properly protected upgradeable contract using UUPS pattern.
  * @dev Demonstrates correct implementation of upgradeable contracts.
- * 
+ *
  * SECURITY FEATURES:
  * 1. constructor() calls _disableInitializers() - prevents initialization attacks
  * 2. Uses Initializable pattern with 'initializer' modifier
@@ -20,7 +20,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract SecureLogicV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     /// @notice Counter value
     uint256 public value;
-    
+
     /**
      * @notice CRITICAL: Disable initializers in the implementation contract
      * @dev This prevents attackers from calling initialize() on the implementation
@@ -29,7 +29,7 @@ contract SecureLogicV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     constructor() {
         _disableInitializers();
     }
-    
+
     /**
      * @notice Initialize the contract (called once via proxy)
      * @param initialOwner The address that will own the contract
@@ -40,7 +40,7 @@ contract SecureLogicV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         // Note: UUPSUpgradeable in OZ v5 is stateless, no init needed
         value = 0;
     }
-    
+
     /**
      * @notice Set the counter value
      * @param _value New value to set
@@ -48,14 +48,14 @@ contract SecureLogicV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function setValue(uint256 _value) public onlyOwner {
         value = _value;
     }
-    
+
     /**
      * @notice Increment the counter
      */
     function increment() public onlyOwner {
         value += 1;
     }
-    
+
     /**
      * @notice Returns the contract version
      * @return Version string
@@ -63,13 +63,13 @@ contract SecureLogicV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
-    
+
     /**
      * @notice Authorization check for upgrades
      * @dev Only owner can upgrade - required by UUPSUpgradeable
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-    
+
     /**
      * @notice Storage gap to allow future storage additions
      * @dev Reserves 50 slots for future use in upgrades

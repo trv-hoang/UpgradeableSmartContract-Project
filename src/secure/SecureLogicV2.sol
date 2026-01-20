@@ -7,7 +7,7 @@ import "./SecureLogicV1.sol";
  * @title SecureLogicV2
  * @notice SECURE: Properly upgraded contract maintaining storage layout.
  * @dev Demonstrates correct upgrade pattern:
- * 
+ *
  * UPGRADE SAFETY:
  * 1. Inherits from V1 - preserves storage layout
  * 2. New variables declared AFTER inherited storage, BEFORE __gap
@@ -17,7 +17,7 @@ import "./SecureLogicV1.sol";
 contract SecureLogicV2 is SecureLogicV1 {
     /// @notice New variable added in V2 - placed after V1 variables
     uint256 public newVar;
-    
+
     /**
      * @notice CRITICAL: Disable initializers in implementation
      * @custom:oz-upgrades-unsafe-allow constructor
@@ -25,7 +25,7 @@ contract SecureLogicV2 is SecureLogicV1 {
     constructor() {
         _disableInitializers();
     }
-    
+
     /**
      * @notice Reinitialize for V2 upgrade
      * @dev Uses reinitializer(2) - can only be called once per version
@@ -33,7 +33,7 @@ contract SecureLogicV2 is SecureLogicV1 {
     function initializeV2() public reinitializer(2) {
         newVar = 100; // Initialize new variable
     }
-    
+
     /**
      * @notice Set the new variable
      * @param _val New value to set
@@ -41,7 +41,7 @@ contract SecureLogicV2 is SecureLogicV1 {
     function setNewVar(uint256 _val) public onlyOwner {
         newVar = _val;
     }
-    
+
     /**
      * @notice Returns the contract version
      * @return Version string
@@ -49,7 +49,7 @@ contract SecureLogicV2 is SecureLogicV1 {
     function version() public pure override returns (string memory) {
         return "2.0.0";
     }
-    
+
     /**
      * @notice Demonstrates new functionality in V2
      * @return Sum of value and newVar
@@ -57,7 +57,7 @@ contract SecureLogicV2 is SecureLogicV1 {
     function getTotal() public view returns (uint256) {
         return value + newVar;
     }
-    
+
     /**
      * @notice Reduced storage gap (49 instead of 50)
      * @dev We added 1 new variable (newVar), so gap is reduced by 1

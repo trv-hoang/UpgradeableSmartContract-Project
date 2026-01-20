@@ -7,13 +7,13 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
  * @title SecureProxy
  * @notice SECURE: ERC1967-compliant proxy using OpenZeppelin's implementation.
  * @dev Demonstrates correct proxy pattern:
- * 
+ *
  * SECURITY FEATURES:
  * 1. Uses EIP-1967 storage slots - implementation at predictable, collision-free slot
  * 2. Implementation slot: keccak256("eip1967.proxy.implementation") - 1
  * 3. Admin slot: keccak256("eip1967.proxy.admin") - 1
  * 4. Built on battle-tested OpenZeppelin code
- * 
+ *
  * EIP-1967 SLOTS:
  * - Implementation: 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
  * - Admin: 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103

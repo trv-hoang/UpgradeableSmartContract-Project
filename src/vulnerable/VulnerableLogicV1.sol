@@ -5,7 +5,7 @@ pragma solidity ^0.8.24;
  * @title VulnerableLogicV1
  * @notice VULNERABLE: This contract lacks proper initialization protection.
  * @dev Demonstrates the "Uninitialized Implementation" vulnerability.
- * 
+ *
  * VULNERABILITY:
  * - No constructor calling _disableInitializers()
  * - Anyone can call initialize() on the implementation contract directly
@@ -16,22 +16,22 @@ contract VulnerableLogicV1 {
     uint256 public value;
     // Storage slot 1
     address public owner;
-    
+
     // VULNERABLE: No protection - anyone can initialize the implementation
     function initialize() public {
         owner = msg.sender;
     }
-    
+
     function setValue(uint256 _value) public {
         require(msg.sender == owner, "Not owner");
         value = _value;
     }
-    
+
     function increment() public {
         require(msg.sender == owner, "Not owner");
         value += 1;
     }
-    
+
     // Upgrade function - sets new implementation
     function upgradeTo(address newImplementation) public {
         require(msg.sender == owner, "Not owner");
@@ -41,7 +41,7 @@ contract VulnerableLogicV1 {
             sstore(0, newImplementation)
         }
     }
-    
+
     /**
      * @notice DANGEROUS: Allows owner to destroy the contract
      * @dev Used to demonstrate the impact of uninitialized implementation attack
