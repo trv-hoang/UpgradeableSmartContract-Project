@@ -19,11 +19,6 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
  * - Admin: 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103
  * - Beacon: 0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50
  *
- * WHY THIS FILE IS SHORT:
- * - The fallback() function is inherited from OpenZeppelin's Proxy contract
- * - The delegatecall logic is in the parent ERC1967Proxy
- * - Using audited libraries is a security best practice
- *
  * INHERITANCE CHAIN:
  * SecureProxy -> ERC1967Proxy -> Proxy (contains fallback)
  */
