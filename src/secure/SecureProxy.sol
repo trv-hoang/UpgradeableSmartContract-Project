@@ -32,6 +32,14 @@ contract SecureProxy is ERC1967Proxy {
     constructor(address _logic, bytes memory _data) ERC1967Proxy(_logic, _data) {}
 
     /**
+     * @notice Handle plain ETH transfers by delegating to the implementation
+     * @dev This ensures ETH sent without calldata is also handled by the implementation
+     */
+    receive() external payable {
+        _fallback();
+    }
+
+    /**
      * @notice Get the current implementation address
      * @return The address of the current implementation contract
      * @dev Reads from EIP-1967 implementation slot (0x360894...)
